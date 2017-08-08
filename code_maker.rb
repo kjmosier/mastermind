@@ -1,13 +1,11 @@
-require_relative "easy_ai"
+class CodeMaker < Mastermind
 
-class CodeMaker  < Mastermind
 
   def initialize
-    @moves_left = 12
     @code =  nil
+    @moves_left = 12
     @guesses = Array.new
     @matches = Array.new
-    play
   end
 
 
@@ -15,18 +13,18 @@ class CodeMaker  < Mastermind
     puts "Create the Secret Code Now."
     @code = get_user_code
     playing = true
+    ai = EasyAI.new
      until !playing
-       ai = EasyAI.new
        puts "Press any key to see AI's next move:"
        gets
-       evaluate(ai.move)
-       win = display_moves
-       playing = false if win != "unknown"
-    #   @guesses << move
-    #   @matches << evaluate(move)
-    #   @moves_left -= 1
-    #   win = display_moves
-    #   playing = false if win != "unknown"
+       move = ai.move
+       @guesses << move
+       @matches << evaluate(@code, move)
+       ai.add_ai_matches(@matches[-1])
+       ai.get_results(@matches[-1][0])
+       @moves_left -= 1
+       display_moves(@guesses, @matches, @moves_left)
+       playing = game_over?(@code, @guesses[-1] ,@moves_left)
      end
   end
 
